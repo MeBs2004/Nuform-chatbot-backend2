@@ -5,15 +5,8 @@ import Groq from "groq-sdk";
 import fs from "fs";
 import path from "path";
 
-console.log(
-  "GROQ KEY LOADED:",
-  process.env.GROQ_API_KEY
-    ? process.env.GROQ_API_KEY.slice(0, 10)
-    : "NOT FOUND"
-);
-
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
+apiKey: process.env.GROQ_API_KEY,
 });
 
 const knowledgePath = path.join(process.cwd(), "knowledge.txt");
@@ -21,64 +14,123 @@ const knowledgePath = path.join(process.cwd(), "knowledge.txt");
 let knowledge = "";
 
 try {
-  knowledge = fs.readFileSync(knowledgePath, "utf8");
-  console.log("knowledge.txt loaded successfully");
+
+knowledge = fs.readFileSync(
+knowledgePath,
+"utf8"
+);
+
+console.log("knowledge.txt loaded successfully");
+
 } catch (error) {
-  console.log("Error loading knowledge.txt:", error.message);
+
+console.log(
+"Error loading knowledge.txt:",
+error.message
+);
 }
 
-export const askGroq = async (userMessage, language = "English") => {
-  try {
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+export const askGroq = async (
+userMessage,
+language = "English"
+) => {
 
-      messages: [
-        {
-          role: "system",
-          content: `
-You are Nuform Social AI Assistant.
+try {
 
-KNOWLEDGE BASE:
+const completion =
+  await groq.chat.completions.create({
+
+    model: "llama-3.3-70b-versatile",
+
+    temperature: 0.2,
+
+    max_tokens: 700,
+
+    messages: [
+
+      {
+        role: "system",
+
+        content: `
+
+You are the official AI assistant of Nuform Social Pvt. Ltd.
+
+IMPORTANT:
+
+You must STRICTLY follow the knowledge base below.
+
+================ KNOWLEDGE BASE ================
+
 ${knowledge}
 
-STRICT RULES:
+================ END KNOWLEDGE BASE ================
 
-1. Answer ONLY questions related to:
-- Nuform Social
-- Nuform Academy
-- Digital Marketing
-- SEO
-- Website Development
-- Branding
-- AI Automation
-- Social Media Marketing
-- Performance Marketing
+STRICT BEHAVIOR RULES:
 
-2. Use the knowledge base to answer.
+ONLY answer questions related to:
+Nuform Social
+Digital Marketing
+SEO
+Website Development
+Branding
+Social Media
+Performance Marketing
+Mobile Apps
+Corporate AV production
+Influencer Marketing
+Business Growth
+Technology Services
+NEVER answer unrelated questions.
+If user asks unrelated question reply EXACTLY:
 
-3. If the question is unrelated to Nuform Social services, respond EXACTLY:
+⚠️ I am the Nuform Social AI Assistant and can only help with questions related to our services, digital marketing, websites, branding, SEO, applications, and business growth solutions.
 
-"I am a Nuform Social chatbot assistant. This question is not related to the services we provide. For any other query please contact +91 9902421936."
+📞 Contact:
++91 9902421936
 
-4. Keep answers professional and concise.
+🌐 Website:
+www.nuformsocial.com
 
-5. Reply ONLY in this language:
+Your response style MUST be:
+modern
+professional
+premium
+human-like
+visually clean
+Use:
+emojis professionally
+bullet points
+spacing
+short paragraphs
+NEVER sound robotic.
+NEVER mention AI model names.
+NEVER say:
+"According to provided knowledge base"
+ALWAYS behave like a premium business assistant similar to:
+Zoho
+Intercom
+Tawk.to
+
+ALWAYS reply in this language:
 ${language}
-`,
-        },
-        {
-          role: "user",
-          content: userMessage,
-        },
-      ],
+`
+},
 
-      temperature: 0.3,
-      max_tokens: 500,
-    });
-
-    return completion.choices[0].message.content;
-  } catch (error) {
-    console.error("Groq Error:", error);
-    return "Sorry, I am currently unavailable.";
+  {
+    role: "user",
+    content: userMessage
   }
+]
+
+});
+
+return completion.choices[0].message.content;
+
+} catch (error) {
+
+console.error("Groq Error:", error);
+
+return "⚠️ Sorry, the assistant is currently unavailable.";
+
+}
 };
