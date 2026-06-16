@@ -11,7 +11,7 @@ export const getSuggestions = async (req, res) => {
       "Performance marketing info",
 
       "Social media services",
-      "Corporate AV production",
+      "Corporate AV pzroduction",
 
       "Mobile app development",
       "Get a quick audit",

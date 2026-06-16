@@ -76,7 +76,7 @@ Branding
 Social Media
 Performance Marketing
 Mobile Apps
-Corporate AV production
+Corporate AV
 Influencer Marketing
 Business Growth
 Technology Services
