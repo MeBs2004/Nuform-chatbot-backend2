@@ -5,9 +5,9 @@ import Groq from "groq-sdk";
 import fs from "fs";
 import path from "path";
 
-const groq = new Groq({
-apiKey: process.env.GROQ_API_KEY,
-});
+// ==========================================
+// LOAD KNOWLEDGE BASE
+// ==========================================
 
 const knowledgePath = path.join(process.cwd(), "knowledge.txt");
 
@@ -15,122 +15,124 @@ let knowledge = "";
 
 try {
 
-knowledge = fs.readFileSync(
-knowledgePath,
-"utf8"
-);
+  knowledge = fs.readFileSync(
+    knowledgePath,
+    "utf8"
+  );
 
-console.log("knowledge.txt loaded successfully");
+  console.log("knowledge.txt loaded successfully");
 
 } catch (error) {
 
-console.log(
-"Error loading knowledge.txt:",
-error.message
-);
+  console.log(
+    "Error loading knowledge.txt:",
+    error.message
+  );
 }
 
+// ==========================================
+// MULTIPLE API KEYS
+// ==========================================
+
+const apiKeys = [
+
+  process.env.GROQ_API_KEY_1,
+  process.env.GROQ_API_KEY_2,
+  process.env.GROQ_API_KEY_3,
+  process.env.GROQ_API_KEY_4,
+
+].filter(Boolean);
+
+// ==========================================
+// FUNCTION
+// ==========================================
+
 export const askGroq = async (
-userMessage,
-language = "English"
+  userMessage,
+  language = "English"
 ) => {
 
-try {
+  // Try all keys one by one
+  for (const key of apiKeys) {
 
-const completion =
-  await groq.chat.completions.create({
+    try {
 
-    model: "llama-3.3-70b-versatile",
+      const groq = new Groq({
+        apiKey: key,
+      });
 
-    temperature: 0.2,
+      const completion =
+        await groq.chat.completions.create({
 
-    max_tokens: 700,
+          model: "llama-3.1-8b-instant",
 
-    messages: [
+          temperature: 0.3,
 
-      {
-        role: "system",
+          max_tokens: 500,
 
-        content: `
+          messages: [
+
+            {
+              role: "system",
+
+              content: `
 
 You are the official AI assistant of Nuform Social Pvt. Ltd.
 
 IMPORTANT:
+Only answer questions related to:
+- Nuform Social
+- Digital Marketing
+- SEO
+- Websites
+- Branding
+- Mobile Apps
+- Performance Marketing
+- Social Media
+- Business Growth
 
-You must STRICTLY follow the knowledge base below.
+If user asks unrelated questions reply EXACTLY:
 
-================ KNOWLEDGE BASE ================
+⚠️ I am the Nuform Social AI Assistant and can only help with business, marketing, branding, websites, SEO, apps, and digital growth related questions.
+
+Company Knowledge:
 
 ${knowledge}
 
-================ END KNOWLEDGE BASE ================
+Response Style:
+- Professional
+- Modern
+- Human-like
+- Short paragraphs
+- Bullet points
+- Clean formatting
 
-STRICT BEHAVIOR RULES:
-
-ONLY answer questions related to:
-Nuform Social
-Digital Marketing
-SEO
-Website Development
-Branding
-Social Media
-Performance Marketing
-Mobile Apps
-Corporate AV
-Influencer Marketing
-Business Growth
-Technology Services
-NEVER answer unrelated questions.
-If user asks unrelated question reply EXACTLY:
-
-⚠️ I am the Nuform Social AI Assistant and can only help with questions related to our services, digital marketing, websites, branding, SEO, applications, and business growth solutions.
-
-📞 Contact:
-+91 9902421936
-
-🌐 Website:
-www.nuformsocial.com
-
-Your response style MUST be:
-modern
-professional
-premium
-human-like
-visually clean
-Use:
-emojis professionally
-bullet points
-spacing
-short paragraphs
-NEVER sound robotic.
-NEVER mention AI model names.
-NEVER say:
-"According to provided knowledge base"
-ALWAYS behave like a premium business assistant similar to:
-Zoho
-Intercom
-Tawk.to
-
-ALWAYS reply in this language:
+Reply language:
 ${language}
+
 `
-},
+            },
 
-  {
-    role: "user",
-    content: userMessage
+            {
+              role: "user",
+              content: userMessage
+            }
+
+          ]
+
+        });
+
+      return completion.choices[0].message.content;
+
+    } catch (error) {
+
+      console.log("Groq Key Failed... Trying Next Key");
+
+      // Try next key automatically
+      continue;
+    }
   }
-]
 
-});
-
-return completion.choices[0].message.content;
-
-} catch (error) {
-
-console.error("Groq Error:", error);
-
-return "⚠️ Sorry, the assistant is currently unavailable.";
-
-}
+  // If all keys fail
+  return "⚠️ Assistant is temporarily unavailable. Please try again later.";
 };

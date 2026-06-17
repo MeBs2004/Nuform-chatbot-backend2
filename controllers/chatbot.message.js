@@ -27,7 +27,6 @@ export const Message = async (req, res) => {
     const bot = await Bot.create({
       text: botResponse,
     });
-c
     return res.status(200).json({
       success: true,
       userMessage: user.text,
