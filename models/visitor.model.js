@@ -2,15 +2,29 @@ import mongoose from "mongoose";
 
 const visitorSchema = new mongoose.Schema(
 {
+  visitorId: {
+    type: String,
+    unique: true,
+  },
+
   ip: String,
+
   country: String,
+
   region: String,
+
   city: String,
+
   timezone: String,
+
   browser: String,
+
   os: String,
+
   device: String,
+
   language: String,
+
   page: String,
 
   firstVisit: {
