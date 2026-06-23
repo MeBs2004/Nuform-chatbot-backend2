@@ -9,12 +9,23 @@ const visitorSchema = new mongoose.Schema(
     index: true,
   },
 
-  // Location
+  // Geo Location
   ip: String,
   country: String,
   region: String,
   city: String,
   timezone: String,
+  isp: String,
+
+  lat: {
+    type: Number,
+    default: 0,
+  },
+
+  lon: {
+    type: Number,
+    default: 0,
+  },
 
   // Device Information
   browser: String,
