@@ -1,44 +1,25 @@
-import mongoose from "mongoose";
+import Visitor from "../models/visitor.model.js";
 
-const visitorSchema = new mongoose.Schema(
-{
-  ip: String,
+export const saveVisitor = async (req, res) => {
 
-  country: String,
+  try {
 
-  region: String,
+    const visitor = await Visitor.create(req.body);
 
-  city: String,
+    res.status(200).json({
+      success: true,
+      visitor,
+    });
 
-  timezone: String,
+  } catch (error) {
 
-  browser: String,
+    console.error(error);
 
-  os: String,
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
 
-  device: String,
+  }
 
-  language: String,
-
-  page: String,
-
-  firstVisit: {
-    type: Date,
-    default: Date.now,
-  },
-
-  lastVisit: {
-    type: Date,
-    default: Date.now,
-  },
-},
-{
-  timestamps: true,
-}
-);
-
-export default mongoose.model(
-  "Visitor",
-  visitorSchema
-);
-
+};

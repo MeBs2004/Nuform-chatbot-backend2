@@ -1,44 +1,11 @@
-import mongoose from "mongoose";
+import express from "express";
 
-const visitorSchema = new mongoose.Schema(
-{
-  ip: String,
+import {
+  saveVisitor,
+} from "../controllers/visitor.controller.js";
 
-  country: String,
+const router = express.Router();
 
-  region: String,
+router.post("/", saveVisitor);
 
-  city: String,
-
-  timezone: String,
-
-  browser: String,
-
-  os: String,
-
-  device: String,
-
-  language: String,
-
-  page: String,
-
-  firstVisit: {
-    type: Date,
-    default: Date.now,
-  },
-
-  lastVisit: {
-    type: Date,
-    default: Date.now,
-  },
-},
-{
-  timestamps: true,
-}
-);
-
-export default mongoose.model(
-  "Visitor",
-  visitorSchema
-);
-
+export default router;
